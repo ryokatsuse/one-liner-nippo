@@ -9,7 +9,7 @@ const app = new Hono<{ Bindings: Env }>();
 // Middleware
 app.use("*", logger());
 app.use("*", cors({
-  origin: ["http://localhost:3000", "https://your-frontend-domain.com"],
+  origin: ["http://localhost:3000", "http://localhost:3001", "https://your-frontend-domain.com"],
   credentials: true,
 }));
 
