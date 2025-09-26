@@ -1,14 +1,16 @@
 import { sign, verify } from "hono/jwt";
-import type { JWTPayload } from "hono/jwt";
 
-export interface TokenPayload extends JWTPayload {
+export interface TokenPayload {
   userId: string;
   username: string;
+  iat: number;
+  exp: number;
+  [key: string]: unknown;
 }
 
 export async function createToken(payload: Omit<TokenPayload, "exp" | "iat">, secret: string): Promise<string> {
   const now = Math.floor(Date.now() / 1000);
-  const tokenPayload: TokenPayload = {
+  const tokenPayload = {
     ...payload,
     iat: now,
     exp: now + (7 * 24 * 60 * 60), // 7 days
@@ -19,7 +21,7 @@ export async function createToken(payload: Omit<TokenPayload, "exp" | "iat">, se
 
 export async function verifyToken(token: string, secret: string): Promise<TokenPayload | null> {
   try {
-    const payload = await verify(token, secret) as TokenPayload;
+    const payload = await verify(token, secret) as unknown as TokenPayload;
     return payload;
   } catch (error) {
     console.error("Token verification failed:", error);
